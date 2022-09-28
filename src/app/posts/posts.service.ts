@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs'
 
 import { Post } from './post.model';
 
 @Injectable({providedIn: 'root'})
 export class PostsService {
   private posts: Post[] = []; // This is reference type TODO: learn about reference types
+  private postsUpdated = new Subject<Post[]>();
 
   getPosts() {
     return [...this.posts];
@@ -17,8 +19,13 @@ export class PostsService {
     // this will not work, this will not affect my original array here.
   }
 
+  getPostsUpdateListener() {
+    return this.postsUpdated.asObservable();
+  }
+
   addPost(title: string, content: string) {
     const post: Post = { title: title, content: content };
     this.posts.push(post);
+    this.postsUpdated.next([...this.posts]);
   }
 }
