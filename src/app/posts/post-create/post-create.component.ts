@@ -9,11 +9,15 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./post-create.component.css'],
 })
 export class PostCreateComponent {
+[x: string]: any;
   enteredTitle = '';
   enteredContent = '';
   @Output() postCreated = new EventEmitter<Post>();
 
-  onAddPost(form:NgForm) {
+  onAddPost(form: NgForm) {
+    if (form.invalid) {
+      return;
+    }
     const post: Post = {
       title: form.value.title,
       content: form.value.content,
