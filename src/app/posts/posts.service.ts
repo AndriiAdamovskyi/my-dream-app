@@ -30,11 +30,11 @@ export class PostsService {
     // this will not work, this will not affect my original array here.
   }
 
-  getPostsUpdateListener() {
+  getPostUpdateListener() {
     return this.postsUpdated.asObservable();
   }
 
-  addPost(id: string, title: string, content: string) {
+  addPost(title: string, content: string) {
     const post: Post = { id: null, title: title, content: content };
     this.posts.push(post);
     this.postsUpdated.next([...this.posts]);
