@@ -30,16 +30,16 @@ export class PostsService {
         this.posts = transformedPosts;
         this.postsUpdated.next([...this.posts]);
       });
-  }
     // return [...this.posts];
-    // * [...array] - Spread operator:
-    // creates new array and takes all the elements of another array,
-    // then posts array here, pull them out of that array and add them to this new array.
-    // It creates a new array with the old objects and therefore this array has been copied.
+  }
 
-    // If I now edit this array, if I add new elements or remove elements from within another component,
-    // this will not work, this will not affect my original array here.
+  // * [...array] - Spread operator:
+  // creates new array and takes all the elements of another array,
+  // then posts array here, pull them out of that array and add them to this new array.
+  // It creates a new array with the old objects and therefore this array has been copied.
 
+  // If I now edit this array, if I add new elements or remove elements from within another component,
+  // this will not work, this will not affect my original array here.
 
   getPostUpdateListener() {
     return this.postsUpdated.asObservable();
@@ -53,6 +53,14 @@ export class PostsService {
         console.log(responceData.message);
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
+      });
+  }
+
+  deletePost(postId: string) {
+    this.http
+      .delete('http://localhost:3000/api/posts/' + postId)
+      .subscribe(() => {
+        console.log('Delete post ' + postId);
       });
   }
 }
