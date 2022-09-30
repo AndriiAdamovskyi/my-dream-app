@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Post } from './post.model';
 
@@ -13,13 +14,23 @@ export class PostsService {
 
   getPosts() {
     this.http
-      .get<{ message: string; posts: Post[] }>(
-        'http://localhost:3000/api/posts'
+      .get<{ message: string; posts: any }>('http://localhost:3000/api/posts')
+      .pipe(
+        map((postData) => {
+          return postData.posts.map((post) => {
+            return {
+              title: post.title,
+              content: post.content,
+              id: post._id,
+            };
+          });
+        })
       )
-      .subscribe((postData) => {
-        this.posts = postData.posts;
+      .subscribe((transformedPosts) => {
+        this.posts = transformedPosts;
         this.postsUpdated.next([...this.posts]);
       });
+  }
     // return [...this.posts];
     // * [...array] - Spread operator:
     // creates new array and takes all the elements of another array,
@@ -28,7 +39,7 @@ export class PostsService {
 
     // If I now edit this array, if I add new elements or remove elements from within another component,
     // this will not work, this will not affect my original array here.
-  }
+
 
   getPostUpdateListener() {
     return this.postsUpdated.asObservable();
