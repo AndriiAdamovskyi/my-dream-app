@@ -1,5 +1,8 @@
 <mat-card>
-  <form (submit)="onSavePost(postForm)" #postForm="ngForm">
+  <!-- Spinner shows only when property isLoading set to true -->
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <!-- Form shows only when property isLoading set to false -->
+  <form (submit)="onSavePost(postForm)" #postForm="ngForm" *ngIf="!isLoading">
     <mat-form-field>
       <input
       matInput
