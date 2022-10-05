@@ -1,5 +1,5 @@
-const express = require('express')
-const multer = require('multer')
+const express = require("express");
+const multer = require("multer");
 
 const Post = require("../models/post");
 
@@ -21,10 +21,13 @@ const storage = multer.diskStorage({
     cb(error, "backend/images");
   },
   filename: (req, file, cb) => {
-    const name = file.originalname.toLowerCase().split(" ").join("-");
+    const name = file.originalname
+      .toLowerCase()
+      .split(" ")
+      .join("-");
     const ext = MIME_TYPE_MAP[file.mimetype];
     cb(null, name + "-" + Date.now() + "." + ext);
-  },
+  }
 });
 
 router.post(
@@ -37,7 +40,7 @@ router.post(
       content: req.body.content,
       imagePath: url + "/images/" + req.file.filename,
     });
-    post.save().then((createdPost) => {
+    post.save().then(createdPost => {
       res.status(201).json({
         message: "Post added successfully",
         post: {
