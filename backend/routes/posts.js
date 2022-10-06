@@ -21,13 +21,10 @@ const storage = multer.diskStorage({
     cb(error, "backend/images");
   },
   filename: (req, file, cb) => {
-    const name = file.originalname
-      .toLowerCase()
-      .split(" ")
-      .join("-");
+    const name = file.originalname.toLowerCase().split(" ").join("-");
     const ext = MIME_TYPE_MAP[file.mimetype];
     cb(null, name + "-" + Date.now() + "." + ext);
-  }
+  },
 });
 
 router.post(
@@ -40,7 +37,7 @@ router.post(
       content: req.body.content,
       imagePath: url + "/images/" + req.file.filename,
     });
-    post.save().then(createdPost => {
+    post.save().then((createdPost) => {
       res.status(201).json({
         message: "Post added successfully",
         post: {
@@ -76,20 +73,26 @@ router.put(
 
 router.get("", (req, res, next) => {
   //We creating our own API for queries
-  const pageSize = +req.query.pageSize
+  const pageSize = +req.query.pageSize;
   const currentPage = +req.query.page;
   const postQuery = Post.find();
+  let fetchedPosts;
   if (pageSize && currentPage) {
-    postQuery
-      .skip(pageSize * (currentPage - 1))
-      .limit(pageSize);
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
-  postQuery.then((documents) => {
-    res.status(200).json({
-      message: "Posts fetched successfully!",
-      posts: documents,
+  postQuery
+    .then((documents) => {
+      fetchedPosts = documents
+      return Post.count();
+    })
+    .then((count) => {
+      res.status(200).json({
+        message: "Posts fetched successfully!",
+        posts: fetchedPosts,
+        maxPosts: count
+      });
+      return Post.count();
     });
-  });
 });
 
 router.get("/:id", (req, res, next) => {
