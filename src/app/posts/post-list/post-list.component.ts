@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
 
 import { Post } from '../post.model';
@@ -18,6 +19,9 @@ export class PostListComponent implements OnInit, OnDestroy {
   // posts = [{ title: '', content: '' }];
   posts: Post[] = [];
   isLoading = false;
+  totalPosts = 10;
+  postsPerPage = 2;
+  pageSizeOptions = [1, 2, 5, 10];
   private postsSub: Subscription;
 
   constructor(public postsService: PostsService) {} //Dependency injection
@@ -25,18 +29,23 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.postsService.getPosts();
-    this.postsSub = this.postsService.getPostUpdateListener()
+    this.postsSub = this.postsService
+      .getPostUpdateListener()
       .subscribe((posts: Post[]) => {
         this.isLoading = false;
         this.posts = posts;
       });
   }
 
-  ngOnDestroy(): void {
-    this.postsSub.unsubscribe();
+  onChangedPage(pageData: PageEvent) {
+    console.log(pageData);
   }
 
   onDelete(postId: string) {
     this.postsService.deletePost(postId);
-  };
+  }
+
+  ngOnDestroy(): void {
+    this.postsSub.unsubscribe();
+  }
 }
