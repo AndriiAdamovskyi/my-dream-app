@@ -21,7 +21,10 @@ const storage = multer.diskStorage({
     cb(error, "backend/images");
   },
   filename: (req, file, cb) => {
-    const name = file.originalname.toLowerCase().split(" ").join("-");
+    const name = file.originalname
+      .toLowerCase()
+      .split(" ")
+      .join("-");
     const ext = MIME_TYPE_MAP[file.mimetype];
     cb(null, name + "-" + Date.now() + "." + ext);
   },
@@ -73,7 +76,7 @@ router.put(
 
 router.get("", (req, res, next) => {
   //We creating our own API for queries
-  const pageSize = +req.query.pageSize;
+  const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
   const postQuery = Post.find();
   let fetchedPosts;
