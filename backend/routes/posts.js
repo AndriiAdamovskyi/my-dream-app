@@ -69,6 +69,7 @@ router.put(
       title: req.body.title,
       content: req.body.content,
       imagePath: imagePath,
+      creator: req.userData.userId
     });
     //Only the user who created post and his userId matches, can modify post
     Post.updateOne(
