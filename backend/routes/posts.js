@@ -22,10 +22,7 @@ const storage = multer.diskStorage({
     cb(error, "backend/images");
   },
   filename: (req, file, cb) => {
-    const name = file.originalname
-      .toLowerCase()
-      .split(" ")
-      .join("-");
+    const name = file.originalname.toLowerCase().split(" ").join("-");
     const ext = MIME_TYPE_MAP[file.mimetype];
     cb(null, name + "-" + Date.now() + "." + ext);
   },
@@ -42,7 +39,7 @@ router.post(
       title: req.body.title,
       content: req.body.content,
       imagePath: url + "/images/" + req.file.filename,
-      creator: req.userData.userId
+      creator: req.userData.userId,
     });
     post.save().then((createdPost) => {
       res.status(201).json({
@@ -73,9 +70,15 @@ router.put(
       content: req.body.content,
       imagePath: imagePath,
     });
-    console.log(post);
-    Post.updateOne({ _id: req.params.id }, post).then((result) => {
-      res.status(200).json({ message: "Update successful!" });
+    //Only the user who created post and his userId matches, can modify post
+    Post.updateOne(
+      { _id: req.params.id, creator: req.userData.userId },
+      post
+    ).then((result) => {
+      if (result.modifiedCount > 0) {
+        res.status(200).json({ message: "Update successful!" });
+      }
+      res.status(401).json({ message: "Not authorized" });
     });
   }
 );
@@ -91,14 +94,14 @@ router.get("", (req, res, next) => {
   }
   postQuery
     .then((documents) => {
-      fetchedPosts = documents
+      fetchedPosts = documents;
       return Post.count();
     })
     .then((count) => {
       res.status(200).json({
         message: "Posts fetched successfully!",
         posts: fetchedPosts,
-        maxPosts: count
+        maxPosts: count,
       });
       return Post.count();
     });
@@ -116,10 +119,17 @@ router.get("/:id", (req, res, next) => {
 
 // Check function must be called before any further processing
 router.delete("/:id", checkAuth, (req, res, next) => {
-  Post.deleteOne({ _id: req.params.id }).then((result) => {
-    console.log(result);
-    res.status(200).json({ message: "Post deleted!" });
-  });
+  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId }).then(
+    (result) => {
+      console.log(result);
+      if (result.deletedCount > 0) {
+        res.status(200).json({ message: "Post successfully deleted!" });
+        console.log(result);
+      } else {
+        res.status(401).json({ message: "Not authorized" });
+      }
+    }
+  );
 });
 
 module.exports = router;
