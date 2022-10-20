@@ -9,8 +9,7 @@ const router = express.Router();
 router.post("/signup", (req, res, next) => {
   //store in database encrypted password for security reasons
   if (req.body.password !== undefined) {
-    bcrypt.hash(req.body.password, 10)
-      .then((hash) => {
+    bcrypt.hash(req.body.password, 10).then((hash) => {
       const user = new User({
         email: req.body.email,
         password: hash,
@@ -26,7 +25,7 @@ router.post("/signup", (req, res, next) => {
         })
         .catch((err) => {
           res.status(500).json({
-            error: err,
+            message: "Invalid authentication credentials",
           });
         });
     });
@@ -68,8 +67,7 @@ router.post("/login", (req, res, next) => {
     })
     .catch((err) => {
       return res.status(401).json({
-        message: "Auth failed",
-        error: err,
+        message: "Invalid authentication credentials",
       });
     });
 });
