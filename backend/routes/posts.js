@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post("", checkAuth, extractFile, PostController.addPost);
 
-router.put("/:id", checkAuth, extractFile, PostController.editPost);
+router.put("/:id", checkAuth, extractFile, PostController.updatePost);
 
 router.get("", PostController.getPosts);
 
